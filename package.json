@@ -1,0 +1,14 @@
+{
+  "name": "jpreset",
+  "version": "1.0.0",
+  "description": "JPreset - website pencari preset Alight Motion dari link TikTok",
+  "author": "JavraSX",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

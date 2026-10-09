@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JPreset</title>
+<meta name="description" content="JPreset - cari link preset Alight Motion dari postingan TikTok. Gratis, tanpa login. Dev: JavraSX">
+<meta name="theme-color" content="#ffd400">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#111;--paper:#fff8dc;--yellow:#ffd400;--red:#ff3b3b;--blue:#2f6bff;--green:#20c46b;--pink:#ff5fa2;--cyan:#27d3ff;
+    --gold:#ffcf40;--gold-d:#c98a00;--royal:#17112b;--royal2:#241a45;
+    --shadow:6px 6px 0 var(--ink);
+    --display:'Bangers',Impact,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+  body{
+    margin:0;min-height:100vh;color:var(--ink);overflow-x:hidden;
+    font-family:'Comic Neue','Comic Sans MS',system-ui,sans-serif;font-weight:700;line-height:1.45;
+    background-color:var(--yellow);
+    background-image:radial-gradient(rgba(255,120,0,.45) 18%,transparent 20%),radial-gradient(rgba(255,120,0,.45) 18%,transparent 20%);
+    background-size:18px 18px;background-position:0 0,9px 9px;
+  }
+  a{color:inherit}
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px 50px;position:relative}
+  section{margin-top:44px;scroll-margin-top:16px}
+  /* icon system (inline SVG, no emoji) */
+  .sprite{position:absolute;width:0;height:0;overflow:hidden}
+  .ic{width:1em;height:1em;display:inline-block;vertical-align:-.14em;flex:none}
+
+  /* ===== Top ticker ===== */
+  .ticker{background:var(--ink);color:var(--yellow);border-bottom:4px solid var(--ink);overflow:hidden;white-space:nowrap;font-family:var(--display);letter-spacing:2px;font-size:17px}
+  .ticker div{display:inline-block;padding:7px 0;animation:marquee 24s linear infinite}
+  .ticker span{margin:0 16px}
+  .ticker span:nth-child(3n+2){color:var(--paper)}
+  .ticker span:nth-child(3n){color:var(--pink)}
+  .ticker .ic{margin-right:8px;font-size:15px}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ===== Hero ===== */
+  header{text-align:center;padding-top:26px;position:relative}
+  .crown-top{display:block;margin:0 auto -6px;font-size:54px;transform:rotate(-8deg);filter:drop-shadow(3px 3px 0 var(--ink));animation:bob 3s ease-in-out infinite}
+  .logo{
+    display:inline-block;font-family:var(--display);font-size:clamp(58px,17vw,96px);letter-spacing:3px;line-height:1;
+    color:var(--paper);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;
+    text-shadow:2px 2px 0 var(--ink),4px 4px 0 var(--ink),6px 6px 0 var(--ink),8px 8px 0 var(--ink),10px 10px 0 var(--red);
+    transform:rotate(-3deg);margin:6px 0 12px;animation:bob 3s ease-in-out infinite;
+  }
+  .logo span{color:var(--red)}
+  @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -6px}}
+  .tag{display:inline-block;background:var(--ink);color:var(--yellow);font-family:var(--display);letter-spacing:1.5px;padding:4px 14px;font-size:17px;transform:rotate(1.5deg);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--red)}
+  .sticker{position:absolute;font-family:var(--display);letter-spacing:1px;border:4px solid var(--ink);padding:2px 12px;box-shadow:3px 3px 0 var(--ink);font-size:22px;animation:wiggle 2.4s ease-in-out infinite;pointer-events:none}
+  .sticker.s1{left:-2px;top:22px;background:var(--cyan);transform:rotate(-14deg)}
+  .sticker.s2{right:-2px;top:54px;background:var(--pink);color:#fff;text-shadow:2px 2px 0 var(--ink);transform:rotate(12deg);animation-delay:.6s}
+  .sticker.s3{right:10px;top:4px;background:var(--paper);font-size:18px;transform:rotate(8deg);animation-delay:1.2s;display:flex;align-items:center;gap:5px}
+  @keyframes wiggle{0%,100%{rotate:0deg}50%{rotate:5deg}}
+  .headline{font-family:var(--display);font-size:clamp(27px,7.5vw,38px);letter-spacing:1px;line-height:1.1;margin:22px 0 6px;font-weight:400;text-shadow:2px 2px 0 #fff}
+  .headline em{font-style:normal;background:var(--red);color:#fff;padding:0 8px;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);display:inline-block;transform:rotate(-1.5deg);text-shadow:2px 2px 0 var(--ink)}
+  .lead{margin:6px auto 0;max-width:520px;font-size:15px}
+
+  /* ===== Panels ===== */
+  .panel{background:var(--paper);border:4px solid var(--ink);border-radius:14px;box-shadow:var(--shadow);padding:16px;position:relative}
+  .bubble{background:#fff;border:4px solid var(--ink);border-radius:22px;padding:12px 16px;position:relative;margin:24px 0 26px;box-shadow:var(--shadow);font-size:15px;text-align:left}
+  .bubble:after{content:"";position:absolute;left:34px;bottom:-22px;border:11px solid transparent;border-top:18px solid var(--ink);border-bottom:0}
+  .bubble:before{content:"";position:absolute;left:38px;bottom:-14px;border:7px solid transparent;border-top:13px solid #fff;border-bottom:0;z-index:1}
+
+  /* ===== Search form ===== */
+  form.search{display:grid;grid-template-columns:1fr auto;gap:12px}
+  .field{position:relative;min-width:0}
+  .field input{
+    width:100%;padding:15px 54px 15px 14px;border:4px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);
+    font:inherit;font-size:16px;outline:none;box-shadow:inset 3px 3px 0 rgba(0,0,0,.12)
+  }
+  .field input:focus{background:#e9f0ff;box-shadow:inset 3px 3px 0 rgba(0,0,0,.12),0 0 0 4px var(--blue)}
+  .paste{position:absolute;right:8px;top:50%;transform:translateY(-55%);width:40px;height:40px;border:3px solid var(--ink);border-radius:10px;background:var(--red);cursor:pointer;font-size:20px;line-height:1;padding:0;box-shadow:0 5px 0 var(--ink);color:#fff;display:grid;place-items:center;transition:transform .08s,box-shadow .08s}
+  .paste .ic{filter:drop-shadow(1.5px 1.5px 0 var(--ink))}
+  .paste:hover{transform:translateY(-62%);box-shadow:0 7px 0 var(--ink)}
+  .paste:active{transform:translateY(-12%);box-shadow:0 0 0 var(--ink)}
+  .btn{
+    cursor:pointer;border:4px solid var(--ink);border-radius:12px;padding:12px 24px;color:#fff;background:var(--red);
+    font-family:var(--display);font-size:24px;letter-spacing:1.5px;text-shadow:2px 2px 0 var(--ink);text-align:center;
+    box-shadow:0 7px 0 var(--ink);transform:translateY(0);transition:transform .08s,box-shadow .08s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1.2
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 9px 0 var(--ink)}
+  .btn:active{transform:translateY(7px);box-shadow:0 0 0 var(--ink)}
+  .btn:disabled{opacity:.7;cursor:wait;transform:translateY(7px);box-shadow:0 0 0 var(--ink)}
+  .btn.blue{background:var(--blue)}
+  .btn.gold{background:linear-gradient(135deg,#fff1a8,var(--gold) 50%,var(--gold-d));color:var(--ink);text-shadow:none}
+  .btn .ic{font-size:.95em}
+  .hint{margin:12px 2px 0;font-size:12.5px;opacity:.8}
+  @media (max-width:480px){
+    form.search{grid-template-columns:1fr}
+    form.search .btn{width:100%}
+  }
+
+  /* ===== Messages ===== */
+  .msg{margin-top:22px;padding:14px 16px;border:4px solid var(--ink);border-radius:14px;box-shadow:var(--shadow);font-size:15px;background:#fff}
+  .err{background:var(--pink)}
+  .load{text-align:center}
+  .boom{font-family:var(--display);font-size:30px;letter-spacing:2px;display:block;color:var(--blue);text-shadow:2px 2px 0 var(--ink);-webkit-text-stroke:1px var(--ink);animation:shake .5s infinite}
+  @keyframes shake{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) scale(1.06)}}
+  .skel{height:14px;border:3px solid var(--ink);border-radius:99px;margin:10px auto 0;max-width:260px;background:linear-gradient(90deg,#eee,#fff1a8,#eee);background-size:200% 100%;animation:sh 1.1s linear infinite}
+  @keyframes sh{to{background-position:-200% 0}}
+
+  /* ===== RESULT: VIP ===== */
+  #out{scroll-margin-top:12px}
+  .vip{margin-top:26px;background:linear-gradient(160deg,var(--royal2),var(--royal) 60%);color:var(--paper);border:4px solid var(--ink);border-radius:16px;box-shadow:var(--shadow),inset 0 0 0 3px var(--gold);padding:0 0 16px;overflow:hidden;animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+  .vip-banner{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#fff1a8,var(--gold) 45%,var(--gold-d));color:var(--ink);border-bottom:4px solid var(--ink);font-family:var(--display);font-size:25px;letter-spacing:2px;padding:7px 10px}
+  .vip-banner .ic{font-size:27px}
+  .creator{display:flex;gap:14px;padding:16px 16px 0}
+  .cover{position:relative;flex:none;width:96px;height:128px;border:4px solid var(--gold);border-radius:12px;box-shadow:4px 4px 0 #000;background:#000;transform:rotate(-2deg);overflow:hidden}
+  .cover img{width:100%;height:100%;object-fit:cover;display:block}
+  .cover .play{position:absolute;right:5px;bottom:5px;width:30px;height:30px;border-radius:50%;background:var(--gold);border:3px solid var(--ink);display:grid;place-items:center;color:var(--ink);font-size:14px;text-decoration:none}
+  .cinfo{min-width:0;flex:1}
+  .au{display:flex;align-items:center;gap:10px;min-width:0}
+  .av{flex:none;width:46px;height:46px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#fff1a8,var(--gold),var(--gold-d));border:3px solid var(--ink);box-shadow:2px 2px 0 #000}
+  .av img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;background:#000}
+  .au b{font-family:var(--display);font-weight:400;font-size:24px;letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--gold)}
+  .role{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:11.5px;color:var(--ink);background:var(--gold);border:3px solid var(--ink);border-radius:99px;padding:0 10px}
+  .desc{margin:10px 0 0;font-size:13px;opacity:.92;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+  .desc.open{-webkit-line-clamp:unset;display:block}
+  .more{background:none;border:0;color:var(--gold);font:inherit;font-size:12.5px;text-decoration:underline;padding:4px 0 0;cursor:pointer}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 16px 0}
+  .tile{background:rgba(255,255,255,.07);border:3px solid var(--gold);border-radius:12px;text-align:center;padding:8px 4px;box-shadow:3px 3px 0 #000}
+  .tile .ic{font-size:22px}
+  .tile b{display:block;font-family:var(--display);font-weight:400;font-size:23px;letter-spacing:1px;line-height:1.1;color:var(--paper)}
+  .tile small{display:block;font-size:11px;opacity:.75;letter-spacing:.5px}
+  .vip-actions{padding:14px 16px 0}
+  .vip-actions .btn{width:100%;font-size:21px;padding:9px 14px;box-shadow:0 5px 0 #000}
+  .vip-actions .btn:active{transform:translateY(5px)}
+
+  /* Summary strip */
+  .sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
+  .sum div{background:var(--paper);border:4px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);text-align:center;padding:8px 4px}
+  .sum .ic{font-size:22px}
+  .sum b{display:block;font-family:var(--display);font-weight:400;font-size:28px;line-height:1;letter-spacing:1px}
+  .sum small{display:block;font-size:11.5px;opacity:.8}
+
+  .count{display:inline-flex;align-items:center;gap:10px;margin:28px 0 4px;font-family:var(--display);font-size:25px;letter-spacing:1.5px;color:var(--ink);background:linear-gradient(135deg,#fff1a8,var(--gold) 50%,var(--gold-d));border:4px solid var(--ink);padding:4px 16px;box-shadow:4px 4px 0 var(--ink);transform:rotate(-1.5deg)}
+  .count .ic{font-size:26px}
+
+  /* Filters */
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 2px}
+  .fbtn{cursor:pointer;font-family:var(--display);letter-spacing:1px;font-size:18px;border:3px solid var(--ink);border-radius:99px;background:var(--paper);color:var(--ink);padding:2px 16px;box-shadow:3px 3px 0 var(--ink)}
+  .fbtn.on{background:var(--ink);color:var(--gold)}
+  .fbtn:active{transform:translate(2px,2px);box-shadow:none}
+
+  /* Preset card (premium) */
+  .p{margin-top:22px;background:linear-gradient(160deg,var(--royal2),var(--royal));color:var(--paper);border:4px solid var(--gold);border-radius:16px;box-shadow:6px 6px 0 var(--ink);padding:16px 14px 14px;position:relative;animation:pop .35s cubic-bezier(.3,1.6,.5,1) backwards}
+  .p.top{border-color:#fff1a8;box-shadow:6px 6px 0 var(--ink),0 0 0 4px var(--gold-d)}
+  .rank{position:absolute;left:-10px;top:-14px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#fff1a8,var(--gold) 50%,var(--gold-d));border:4px solid var(--ink);color:var(--ink);display:grid;place-items:center;font-family:var(--display);font-size:25px;box-shadow:3px 3px 0 var(--ink)}
+  .ribbon{position:absolute;right:12px;top:-16px;display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;border:3px solid var(--ink);border-radius:8px;padding:0 10px;font-family:var(--display);letter-spacing:1px;font-size:16px;text-shadow:1px 1px 0 var(--ink);box-shadow:3px 3px 0 var(--ink);transform:rotate(2deg)}
+  .p .row{display:flex;gap:14px;align-items:center;margin-top:8px}
+  .thumb{flex:none;width:76px;height:76px;border:4px solid var(--gold);border-radius:12px;overflow:hidden;background:#000;box-shadow:3px 3px 0 #000}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb.none{display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--blue));font-size:34px;color:#fff}
+  .t{flex:1;min-width:0}
+  .t b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;font-family:var(--display);font-size:22px;letter-spacing:.8px;font-weight:400;line-height:1.12;color:var(--gold)}
+  .note{margin-top:4px;font-size:12px;opacity:.8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+  .specs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .spec{background:rgba(255,255,255,.07);border:3px solid rgba(255,207,64,.55);border-radius:10px;padding:5px 4px;text-align:center;min-width:0}
+  .spec small{display:flex;align-items:center;justify-content:center;gap:4px;font-size:10.5px;opacity:.7;letter-spacing:.6px}
+  .spec b{display:block;font-family:var(--display);font-weight:400;font-size:19px;letter-spacing:.8px;line-height:1.2;color:var(--paper);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:0 10px;border:3px solid var(--ink);border-radius:99px;background:var(--gold);color:var(--ink)}
+  .chip.ok{background:var(--green)}
+  .chip.pin{background:var(--pink)}
+  .acts{display:grid;grid-template-columns:1.4fr 1fr;gap:10px;margin-top:14px}
+  .acts .btn{font-size:20px;padding:9px 8px;box-shadow:0 5px 0 #000}
+  .acts .btn:active{transform:translateY(5px)}
+  @keyframes pop{from{opacity:0;transform:scale(.7) rotate(-4deg)}to{opacity:1}}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,140px) rotate(-2deg);background:var(--red);color:#fff;text-shadow:2px 2px 0 var(--ink);border:4px solid var(--ink);border-radius:14px;padding:8px 22px;font-family:var(--display);letter-spacing:1.5px;font-size:23px;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:transform .3s cubic-bezier(.3,1.6,.5,1);z-index:50;box-shadow:0 7px 0 var(--ink)}
+  .toast .ic{filter:drop-shadow(2px 2px 0 var(--ink))}
+  .toast.show{transform:translate(-50%,0) rotate(-2deg)}
+
+  /* ===== Section titles ===== */
+  .stitle{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-size:30px;letter-spacing:1.5px;font-weight:400;margin:0 0 18px;color:var(--paper);background:var(--ink);padding:3px 18px;border:4px solid var(--ink);box-shadow:4px 4px 0 var(--red);transform:rotate(-1.5deg)}
+  .stitle .ic{font-size:26px}
+
+  /* ===== Steps ===== */
+  .steps{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+  .steps li{display:flex;gap:14px;align-items:center;font-size:15.5px}
+  .num{flex:none;width:46px;height:46px;border:4px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:25px;color:#fff;background:var(--blue);box-shadow:3px 3px 0 var(--ink);text-shadow:2px 2px 0 var(--ink)}
+  .steps li:nth-child(2) .num{background:var(--red)}
+  .steps li:nth-child(3) .num{background:var(--green)}
+  .steps li:nth-child(4) .num{background:var(--pink)}
+
+  /* ===== About / features ===== */
+  .about p{margin:0 0 10px;font-size:15.5px}
+  .about p:last-child{margin:0}
+  .feats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  .feat{border:4px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);padding:12px;text-align:center}
+  .feat .ic{font-size:36px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25))}
+  .feat b{display:block;font-family:var(--display);font-size:20px;letter-spacing:.8px;font-weight:400;margin-top:4px}
+  .feat small{display:block;font-size:12.5px;line-height:1.3;margin-top:2px;opacity:.85}
+  .feat:nth-child(1){transform:rotate(-1deg);background:#e3ecff}
+  .feat:nth-child(2){transform:rotate(1deg);background:#ffe3ee}
+  .feat:nth-child(3){transform:rotate(1deg);background:#dcfbe9}
+  .feat:nth-child(4){transform:rotate(-1deg);background:#fff3b8}
+
+  /* ===== FAQ ===== */
+  details{background:var(--paper);border:4px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);margin-bottom:14px;overflow:hidden}
+  summary{cursor:pointer;list-style:none;padding:12px 44px 12px 14px;font-family:var(--display);font-size:20px;letter-spacing:.8px;position:relative}
+  summary::-webkit-details-marker{display:none}
+  summary:after{content:"+";position:absolute;right:12px;top:50%;transform:translateY(-50%);width:26px;height:26px;border:3px solid var(--ink);border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-size:20px;line-height:1}
+  details[open] summary:after{content:"\2212";background:var(--pink)}
+  details[open] summary{border-bottom:4px solid var(--ink);background:#fff}
+  details p{margin:0;padding:12px 14px;font-size:14.5px}
+
+  /* ===== Footer ===== */
+  footer{margin-top:54px;background:var(--ink);color:var(--paper);border-top:6px solid var(--red)}
+  .f-in{max-width:720px;margin:0 auto;padding:30px 16px 22px}
+  .f-logo{font-family:var(--display);font-size:36px;letter-spacing:2px;line-height:1;color:var(--paper);display:flex;align-items:center;gap:8px}
+  .f-logo span{color:var(--yellow)}
+  .f-logo .ic{font-size:34px}
+  .f-desc{margin:10px 0 14px;font-size:14px;opacity:.85;max-width:480px}
+  .tt{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);background:linear-gradient(135deg,#fff6c2,var(--gold) 50%,var(--gold-d));border:3px solid var(--paper);border-radius:99px;padding:5px 22px 5px 5px;box-shadow:3px 3px 0 var(--red);transition:transform .1s}
+  .tt:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--red)}
+  .tt i{flex:none;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#3a2d6b,var(--ink) 70%);border:3px solid var(--ink);box-shadow:0 0 0 3px var(--gold),inset 0 0 0 2px rgba(255,207,64,.35);display:grid;place-items:center;font-style:normal;font-size:24px}
+  .tt .ic{vertical-align:0}
+  .tt span{display:block;line-height:1.1;text-align:left}
+  .tt small{display:block;font-family:var(--display);letter-spacing:1.5px;font-size:12px;opacity:.75}
+  .tt b{display:block;font-family:var(--display);font-weight:400;letter-spacing:1px;font-size:22px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:26px}
+  .cols h4{margin:0 0 8px;font-family:var(--display);font-weight:400;letter-spacing:1.5px;font-size:20px;color:var(--yellow)}
+  .cols a,.cols span{display:flex;align-items:center;gap:7px;color:var(--paper);text-decoration:none;font-size:14px;padding:3px 0;opacity:.9}
+  .cols a:hover{color:var(--yellow);opacity:1}
+  .cols .ic{font-size:14px;color:var(--yellow)}
+  .f-bot{border-top:2px dashed rgba(255,248,220,.3);margin-top:24px;padding-top:14px;font-size:12px;opacity:.8;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+  .dev{display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:var(--red);color:#fff;border:3px solid var(--paper);padding:5px 16px;border-radius:12px;font-family:var(--display);letter-spacing:1.5px;font-size:19px;transform:rotate(-1.5deg);box-shadow:3px 3px 0 var(--yellow)}
+  .dev b{color:var(--yellow);font-weight:400}
+  .f-in a.zx{color:var(--yellow)}
+
+  @media (max-width:400px){
+    .specs{grid-template-columns:1fr 1fr}
+    .spec:nth-child(3){grid-column:1/-1}
+    .acts{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== Icon sprite (premium gold / diamond set) ===== -->
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff6c2"/><stop offset=".45" stop-color="#ffcf40"/><stop offset="1" stop-color="#c98a00"/>
+    </linearGradient>
+    <linearGradient id="ice" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eafcff"/><stop offset=".5" stop-color="#27d3ff"/><stop offset="1" stop-color="#2f6bff"/>
+    </linearGradient>
+    <linearGradient id="ruby" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd0e0"/><stop offset=".5" stop-color="#ff5fa2"/><stop offset="1" stop-color="#c81e5a"/>
+    </linearGradient>
+    <linearGradient id="emerald" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d4ffe8"/><stop offset=".5" stop-color="#20c46b"/><stop offset="1" stop-color="#0b7a3e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- gold / gem icons -->
+  <symbol id="i-crown" viewBox="0 0 24 24" fill="url(#gold)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M2.5 7.5l5 4.5L12 4l4.5 8 5-4.5L19.5 19h-15z"/><path d="M4.5 19.5h15" fill="none"/>
+    <circle cx="2.5" cy="7" r="1.3"/><circle cx="12" cy="3.6" r="1.3"/><circle cx="21.5" cy="7" r="1.3"/>
+  </symbol>
+  <symbol id="i-diamond" viewBox="0 0 24 24" fill="url(#ice)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20M9 3l-1 6 4 13M15 3l1 6-4 13" fill="none"/>
+  </symbol>
+  <symbol id="i-ruby" viewBox="0 0 24 24" fill="url(#ruby)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20M9 3l-1 6 4 13M15 3l1 6-4 13" fill="none"/>
+  </symbol>
+  <symbol id="i-emerald" viewBox="0 0 24 24" fill="url(#emerald)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M7 3h10l5 5v8l-5 5H7l-5-5V8z"/><path d="M7 8h10v8H7z" fill="none"/>
+  </symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="url(#gold)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z"/>
+  </symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24" fill="url(#gold)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/>
+  </symbol>
+  <symbol id="i-medal" viewBox="0 0 24 24" fill="url(#gold)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M7 2h4l1 6H8zM17 2h-4l-1 6h4z" fill="url(#ruby)"/><circle cx="12" cy="15" r="6.5"/><path d="M12 11.6l1.1 2.2 2.4.3-1.8 1.7.5 2.4-2.2-1.2-2.2 1.2.5-2.4-1.8-1.7 2.4-.3z" fill="#fff6c2" stroke-width="1"/>
+  </symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="url(#emerald)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="M8 12l3 3 5-6" fill="none" stroke="#fff" stroke-width="2"/>
+  </symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24" fill="url(#gold)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M13 2L4 14h6l-1 8 9-12h-6z"/>
+  </symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24" fill="url(#ruby)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="3" y="8" width="18" height="5" rx="1"/><path d="M4.5 13h15v8h-15z"/><path d="M12 8v13" fill="none"/><path d="M12 8c-2 0-5-.5-5-3a2 2 0 0 1 3.5-1.2L12 8zM12 8c2 0 5-.5 5-3a2 2 0 0 0-3.5-1.2L12 8z" fill="url(#gold)"/>
+  </symbol>
+  <symbol id="i-lens" viewBox="0 0 24 24" fill="url(#ice)" stroke="#111" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6" fill="none" stroke-width="3"/><path d="M7 9a3.2 3.2 0 0 1 3-2.4" fill="none" stroke="#fff" stroke-width="1.6"/>
+  </symbol>
+
+  <!-- line / utility icons (use currentColor) -->
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/>
+  </symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M12 21s-8.5-5.2-8.5-11A4.7 4.7 0 0 1 12 7.2 4.7 4.7 0 0 1 20.5 10c0 5.8-8.5 11-8.5 11z"/>
+  </symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 5h18v12H10l-5 4v-4H3z"/>
+  </symbol>
+  <symbol id="i-paste" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="4" width="14" height="17" rx="2.5"/><rect x="9" y="2" width="6" height="4" rx="1.2" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="8" y="8" width="13" height="13" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>
+  </symbol>
+  <symbol id="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 17L17 7M9 7h8v8"/>
+  </symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M7 4l13 8-13 8z"/>
+  </symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2h8l5 5v15H6z"/><path d="M14 2v5h5"/>
+  </symbol>
+  <symbol id="i-frame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="3" width="16" height="18" rx="2.5"/>
+  </symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M9 3h6l-1 7 3 3v2h-5v6l-1 1-1-1v-6H5v-2l3-3z"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12.5l4.5 4.5L19 7"/>
+  </symbol>
+  <symbol id="i-tiktok" viewBox="0 0 24 24" stroke="none">
+    <path transform="translate(-.9 -.7)" fill="#25f4ee" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+    <path transform="translate(.9 .7)" fill="#fe2c55" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+    <path fill="#fff8dc" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+  </symbol>
+  <symbol id="i-dot" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l3 9-3 9-3-9z"/></symbol>
+</svg>
+
+<div class="ticker" aria-hidden="true"><div>
+  <span><svg class="ic"><use href="#i-diamond"/></svg>GRATIS</span><span><svg class="ic"><use href="#i-crown"/></svg>TANPA LOGIN</span><span><svg class="ic"><use href="#i-sparkle"/></svg>TANPA IKLAN</span><span><svg class="ic"><use href="#i-ruby"/></svg>CARI PRESET ALIGHT MOTION</span><span><svg class="ic"><use href="#i-star"/></svg>DARI LINK TIKTOK</span><span><svg class="ic"><use href="#i-diamond"/></svg>GRATIS</span><span><svg class="ic"><use href="#i-crown"/></svg>TANPA LOGIN</span><span><svg class="ic"><use href="#i-sparkle"/></svg>TANPA IKLAN</span><span><svg class="ic"><use href="#i-ruby"/></svg>CARI PRESET ALIGHT MOTION</span><span><svg class="ic"><use href="#i-star"/></svg>DARI LINK TIKTOK</span>
+</div></div>
+
+<div class="wrap">
+
+  <!-- ===== HERO + SEARCH ===== -->
+  <header id="atas">
+    <span class="sticker s1">POW!</span>
+    <span class="sticker s2">ZAP!</span>
+    <span class="sticker s3"><svg class="ic"><use href="#i-diamond"/></svg>GRATIS</span>
+    <svg class="ic crown-top"><use href="#i-crown"/></svg>
+    <div class="logo">J<span>Preset</span></div><br>
+    <div class="tag">ALIGHT MOTION PRESET FINDER</div>
+    <h1 class="headline">Nemu preset AM <em>tanpa ribet!</em></h1>
+    <p class="lead">Tempel link video TikTok, JPreset bongkar deskripsi, bio, komentar, dan link di bio buat nemuin link preset Alight Motion.</p>
+  </header>
+
+  <section id="cari" style="margin-top:26px">
+    <div class="bubble">Tempel link video TikTok di bawah, lalu tekan <b>CARI!</b></div>
+    <form id="f" class="search panel">
+      <div class="field">
+        <input id="u" type="text" inputmode="url" placeholder="https://vt.tiktok.com/xxxx" autocomplete="off" required>
+        <button type="button" id="paste" class="paste" title="Tempel dari clipboard" aria-label="Tempel dari clipboard"><svg class="ic"><use href="#i-paste"/></svg></button>
+      </div>
+      <button id="b" class="btn" type="submit"><svg class="ic"><use href="#i-lens"/></svg><span>CARI!</span></button>
+    </form>
+    <p class="hint">Contoh link: <b>vt.tiktok.com/xxxx</b> atau <b>tiktok.com/@user/video/123…</b></p>
+    <div id="out"></div>
+  </section>
+
+  <!-- ===== STEP BY STEP ===== -->
+  <section id="cara">
+    <h2 class="stitle"><svg class="ic"><use href="#i-star"/></svg>STEP BY STEP</h2>
+    <div class="panel">
+      <ol class="steps">
+        <li><span class="num">1</span><span>Tempel link video TikTok ke kolom pencarian</span></li>
+        <li><span class="num">2</span><span>JPreset memindai video, bio, dan komentar</span></li>
+        <li><span class="num">3</span><span>Link preset diambil otomatis dari hasil pindaian</span></li>
+        <li><span class="num">4</span><span>Tekan <b>BUKA PRESET</b> di preset yang kamu butuhkan</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== TENTANG ===== -->
+  <section id="tentang" class="about">
+    <h2 class="stitle"><svg class="ic"><use href="#i-crown"/></svg>APA ITU JPRESET?</h2>
+    <div class="panel">
+      <p>JPreset adalah website pencari preset <b>Alight Motion</b>. Banyak kreator TikTok menyembunyikan link preset di deskripsi, bio, komentar, atau balasan. JPreset mengumpulkannya dalam satu tempat supaya kamu tidak perlu scroll dan mencari satu per satu.</p>
+      <p>Tinggal tempel link videonya, tunggu sebentar, dan semua link preset yang ketemu langsung tampil rapi lengkap dengan jenis dan ukurannya.</p>
+    </div>
+    <div class="feats">
+      <div class="feat"><svg class="ic"><use href="#i-diamond"/></svg><b>Gratis</b><small>Pakai sepuasnya tanpa bayar</small></div>
+      <div class="feat"><svg class="ic"><use href="#i-shield"/></svg><b>Tanpa Login</b><small>Tidak perlu daftar akun</small></div>
+      <div class="feat"><svg class="ic"><use href="#i-lens"/></svg><b>Scan Lengkap</b><small>Deskripsi, bio, komentar, link bio</small></div>
+      <div class="feat"><svg class="ic"><use href="#i-bolt"/></svg><b>Praktis</b><small>Cocok dipakai langsung dari HP</small></div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq">
+    <h2 class="stitle"><svg class="ic"><use href="#i-sparkle"/></svg>TANYA JAWAB</h2>
+    <details>
+      <summary>Link TikTok apa yang bisa dipakai?</summary>
+      <p>Link pendek seperti <b>vt.tiktok.com/xxxx</b>, link panjang <b>tiktok.com/@user/video/…</b>, atau langsung ID videonya.</p>
+    </details>
+    <details>
+      <summary>Kenapa preset tidak ketemu?</summary>
+      <p>Bisa jadi kreatornya memang tidak menaruh link preset di deskripsi, bio, atau komentar, atau link-nya sudah dihapus. Coba video lain dari kreator yang sama.</p>
+    </details>
+    <details>
+      <summary>Pencariannya lama, normal?</summary>
+      <p>Normal. Memindai komentar butuh waktu, kadang sampai sekitar satu menit. Tunggu saja sampai hasilnya muncul.</p>
+    </details>
+    <details>
+      <summary>Apa arti label di hasil (5MB, XML, Pilihan Author)?</summary>
+      <p>Label tipe menunjukkan jenis link preset yang ditemukan, misalnya 5MB atau XML. Label <b>Pilihan Author</b> artinya link-nya ditaruh langsung oleh pemilik video.</p>
+    </details>
+    <details>
+      <summary>Apakah JPreset menyimpan link yang aku cari?</summary>
+      <p>Tidak. JPreset tidak membuat akun dan tidak menyimpan riwayat pencarianmu.</p>
+    </details>
+  </section>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="f-in">
+    <div class="f-logo"><svg class="ic"><use href="#i-crown"/></svg><div>J<span>Preset</span></div></div>
+    <p class="f-desc">Tempel link TikTok dan dapatkan link preset Alight Motion yang tersembunyi di deskripsi, bio, komentar, dan balasan. Gratis, tanpa akun, tanpa iklan.</p>
+    <a class="tt" href="https://www.tiktok.com/@javrr12th" target="_blank" rel="noopener"><i><svg class="ic"><use href="#i-tiktok"/></svg></i><span><small>IKUTI DI TIKTOK</small><b>@javrr12th</b></span></a>
+
+    <div class="cols">
+      <div>
+        <h4>JELAJAH</h4>
+        <a href="#cari"><svg class="ic"><use href="#i-dot"/></svg>Kolom cari</a>
+        <a href="#cara"><svg class="ic"><use href="#i-dot"/></svg>Cara pakai</a>
+        <a href="#faq"><svg class="ic"><use href="#i-dot"/></svg>Tanya jawab</a>
+        <a href="#atas"><svg class="ic"><use href="#i-dot"/></svg>Kembali ke atas</a>
+      </div>
+      <div>
+        <h4>TENTANG</h4>
+        <span><svg class="ic"><use href="#i-dot"/></svg>Gratis dipakai</span>
+        <span><svg class="ic"><use href="#i-dot"/></svg>Tanpa daftar</span>
+        <span><svg class="ic"><use href="#i-dot"/></svg>Tanpa iklan</span>
+      </div>
+    </div>
+
+    <div class="dev"><svg class="ic"><use href="#i-crown"/></svg><span>DEV BY <b>JavraSX</b></span></div>
+
+    <div class="f-bot">
+      <span>© 2026 JPreset · JavraSX</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"><svg class="ic"><use href="#i-check"/></svg><span id="toastTxt">Tersalin!</span></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl = (u) => /^https?:\/\//i.test(u || '') ? esc(u) : '#';
+const num = (n) => n == null ? '-' : Intl.NumberFormat('id-ID', {notation:'compact'}).format(n);
+const ic = (name) => `<svg class="ic"><use href="#i-${name}"/></svg>`;
+
+let state = { list: [], filter: 'all' };
+
+/* ---------- toast ---------- */
+let toastT;
+function toast(msg) {
+  $('toastTxt').textContent = msg;
+  $('toast').classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => $('toast').classList.remove('show'), 1800);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch {}
+    ta.remove();
+  }
+  toast('Link tersalin!');
+}
+
+/* ---------- paste ---------- */
+$('paste').addEventListener('click', async () => {
+  try {
+    const t = await navigator.clipboard.readText();
+    if (t) $('u').value = t.trim();
+    $('u').focus();
+  } catch (e) {
+    $('u').focus();
+    toast('Tempel manual ya');
+  }
+});
+
+/* ---------- search ---------- */
+$('f').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const link = $('u').value.trim();
+  if (!link) return;
+
+  $('b').disabled = true;
+  $('b').querySelector('span').textContent = 'MENCARI...';
+  $('out').innerHTML = '<div class="msg load"><span class="boom">WHOOSH!</span>Lagi memindai video, bio, dan komentar... bisa sampai 1 menit.<div class="skel"></div><div class="skel" style="max-width:200px"></div></div>';
+
+  try {
+    const r = await fetch('/api/find?url=' + encodeURIComponent(link));
+    const d = await r.json();
+    if (!r.ok || d.ok === false) throw new Error(d.error || 'Gagal memproses link');
+    render(d);
+  } catch (err) {
+    $('out').innerHTML = '<div class="msg err"><span class="boom" style="color:#fff">OOPS!</span>' + esc(err.message) + '</div>';
+  } finally {
+    $('b').disabled = false;
+    $('b').querySelector('span').textContent = 'CARI!';
+    $('out').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+});
+
+/* ---------- render ---------- */
+function render(d) {
+  const v = d.video;
+
+  // urutkan: pilihan author dulu, lalu disematkan, sisanya sesuai urutan asli
+  state.list = d.presetLinks
+    .map((p, i) => ({ ...p, _i: i }))
+    .sort((a, b) => (b.byAuthor - a.byAuthor) || (b.pinned - a.pinned) || (a._i - b._i));
+  state.filter = 'all';
+
+  const n = state.list.length;
+  const byAuthor = state.list.filter((p) => p.byAuthor).length;
+  const pinned = state.list.filter((p) => p.pinned).length;
+  const desc = v.description || '';
+
+  let html = `
+    <div class="vip">
+      <div class="vip-banner">${ic('crown')}<span>HASIL PREMIUM</span>${ic('diamond')}</div>
+      <div class="creator">
+        <div class="cover">
+          ${v.cover ? `<img src="${safeUrl(v.cover)}" alt="" referrerpolicy="no-referrer">` : ''}
+          ${v.playUrl ? `<a class="play" href="${safeUrl(v.playUrl)}" target="_blank" rel="noopener noreferrer" title="Tonton video" aria-label="Tonton video">${ic('play')}</a>` : ''}
+        </div>
+        <div class="cinfo">
+          <div class="au">
+            ${d.avatar ? `<div class="av"><img src="${safeUrl(d.avatar)}" alt="" referrerpolicy="no-referrer"></div>` : ''}
+            <b>${esc(d.author || 'Unknown')}</b>
+          </div>
+          <span class="role">${ic('medal')}KREATOR</span>
+          <p class="desc" id="desc">${esc(desc)}</p>
+          ${desc.length > 120 ? '<button type="button" class="more" id="more">Lihat selengkapnya</button>' : ''}
+        </div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><span style="color:var(--cyan)">${ic('eye')}</span><b>${num(v.stats.views)}</b><small>TONTON</small></div>
+        <div class="tile"><span style="color:var(--pink)">${ic('heart')}</span><b>${num(v.stats.likes)}</b><small>SUKA</small></div>
+        <div class="tile"><span style="color:var(--green)">${ic('chat')}</span><b>${num(v.stats.comments)}</b><small>KOMENTAR</small></div>
+      </div>
+      ${v.playUrl ? `<div class="vip-actions"><a class="btn gold" href="${safeUrl(v.playUrl)}" target="_blank" rel="noopener noreferrer">${ic('play')}<span>TONTON VIDEO</span></a></div>` : ''}
+    </div>
+
+    <div class="sum">
+      <div>${ic('diamond')}<b>${n}</b><small>Total preset</small></div>
+      <div>${ic('crown')}<b>${byAuthor}</b><small>Pilihan author</small></div>
+      <div>${ic('star')}<b>${pinned}</b><small>Disematkan</small></div>
+    </div>
+
+    <div class="count">${n ? `${ic('sparkle')}<span>${n} PRESET KETEMU</span>` : `${ic('ruby')}<span>BELUM KETEMU</span>`}</div>`;
+
+  if (!n) {
+    html += '<div class="msg load" style="margin-top:14px">Tidak ada link preset di video ini. Coba video lain dari kreator yang sama.</div>';
+    $('out').innerHTML = html;
+    bindVip();
+    return;
+  }
+
+  const types = [...new Set(state.list.map((p) => (p.type || '').toLowerCase()).filter(Boolean))];
+  if (types.length > 1) {
+    html += `<div class="filters" id="filters">
+      <button type="button" class="fbtn on" data-f="all">SEMUA</button>
+      ${types.map((t) => `<button type="button" class="fbtn" data-f="${esc(t)}">${esc(t.toUpperCase())}</button>`).join('')}
+    </div>`;
+  }
+
+  html += '<div id="cards"></div>';
+  $('out').innerHTML = html;
+  bindVip();
+  renderCards();
+
+  const fl = $('filters');
+  if (fl) fl.addEventListener('click', (e) => {
+    const b = e.target.closest('.fbtn');
+    if (!b) return;
+    state.filter = b.dataset.f;
+    fl.querySelectorAll('.fbtn').forEach((x) => x.classList.toggle('on', x === b));
+    renderCards();
+  });
+}
+
+function bindVip() {
+  const more = $('more');
+  if (more) more.addEventListener('click', () => {
+    const el = $('desc');
+    const open = el.classList.toggle('open');
+    more.textContent = open ? 'Sembunyikan' : 'Lihat selengkapnya';
+  });
+}
+
+function renderCards() {
+  const items = state.list
+    .map((p, idx) => ({ p, idx }))
+    .filter(({ p }) => state.filter === 'all' || (p.type || '').toLowerCase() === state.filter);
+
+  let html = '';
+  items.forEach(({ p, idx }, k) => {
+    const note = typeof p.detail === 'string' ? p.detail.trim() : '';
+    html += `
+      <div class="p ${p.byAuthor ? 'top' : ''}" style="animation-delay:${k * 70}ms">
+        <div class="rank">${k + 1}</div>
+        ${p.byAuthor ? `<div class="ribbon">${ic('crown')}PILIHAN AUTHOR</div>` : ''}
+        <div class="row">
+          ${p.thumb ? `<div class="thumb"><img src="${safeUrl(p.thumb)}" alt="" referrerpolicy="no-referrer"></div>` : `<div class="thumb none">${ic('diamond')}</div>`}
+          <div class="t">
+            <b>${esc(p.title)}</b>
+            ${note ? `<div class="note">${esc(note)}</div>` : ''}
+          </div>
+        </div>
+        <div class="specs">
+          <div class="spec"><small>${ic('sparkle')}TIPE</small><b>${esc((p.type || '-').toUpperCase())}</b></div>
+          <div class="spec"><small>${ic('file')}UKURAN</small><b>${esc(p.size || '-')}</b></div>
+          <div class="spec"><small>${ic('frame')}RASIO</small><b>${esc(p.ratio || '-')}</b></div>
+        </div>
+        ${(p.byAuthor || p.pinned) ? `<div class="badges">
+          ${p.byAuthor ? `<span class="chip ok">${ic('check')}Dari author</span>` : ''}
+          ${p.pinned ? `<span class="chip pin">${ic('pin')}Disematkan</span>` : ''}
+        </div>` : ''}
+        <div class="acts">
+          <a class="btn blue" href="${safeUrl(p.url)}" target="_blank" rel="noopener noreferrer">${ic('open')}<span>BUKA PRESET</span></a>
+          <button type="button" class="btn gold" data-copy="${idx}">${ic('copy')}<span>SALIN</span></button>
+        </div>
+      </div>`;
+  });
+  $('cards').innerHTML = html;
+}
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-copy]');
+  if (!b) return;
+  const p = state.list[Number(b.dataset.copy)];
+  if (p && p.url) copyText(p.url);
+});
+</script>
+</body>
+</html>
